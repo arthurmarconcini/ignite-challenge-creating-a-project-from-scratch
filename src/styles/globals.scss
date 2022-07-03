@@ -5,3 +5,27 @@
 }
 
 // TODO
+:root {
+  --highlight: #FF57B2;
+  --heading:  #F8F8F8;
+  --background: rgba(40, 44, 52, 0.83);
+  --body: #D7D7D7;
+  --info: #BBBBBB;
+}
+
+@media (max-width: 1000px) {
+  html {
+    font-size: 93.75%;
+  }
+}
+
+@media (max-width: 720px) {
+  html {
+    font-size: 87.5%;
+  }
+}
+
+body {
+  background: var(--background);
+
+}
