@@ -13,6 +13,10 @@
   --info: #BBBBBB;
 }
 
+html {
+  font-family: 'inter', sans-serif;
+}
+
 @media (max-width: 1000px) {
   html {
     font-size: 93.75%;
@@ -27,5 +31,4 @@
 
 body {
   background: var(--background);
-
 }
