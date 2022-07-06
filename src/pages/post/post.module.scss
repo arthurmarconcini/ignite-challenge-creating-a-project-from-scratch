@@ -1,1 +1,64 @@
 // TODO
+
+.banner {
+  height: 400px;
+
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.container {
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+}
+
+.postHeader {
+  h1 {
+    color: var(--heading);
+
+    font-weight: 700;
+    font-size: 3rem;
+    line-height: 3.625rem;
+    letter-spacing: -0.5px;
+
+    margin-bottom: 1.5rem;
+  }
+
+  margin-bottom: 4rem;
+}
+
+.info {
+  display: flex;
+  gap: 1.5rem;
+
+  color: var(--info);
+}
+
+.info time,
+.info span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.postContent {
+  article h2 {
+    font-weight: 700;
+    font-size: 36px;
+
+    color: var(--heading);
+    margin-bottom: 3.125rem;
+  }
+
+  article p {
+    font-weight: 400;
+    font-size: 18px;
+
+    color: var(--body);
+    margin-bottom: 1.5625rem;
+    text-align: justify;
+  }
+}

@@ -1,12 +1,13 @@
+import { useState } from 'react';
 import { GetStaticProps } from 'next';
+import Link from 'next/link';
+import { FiCalendar, FiUser } from 'react-icons/fi';
 
 import { getPrismicClient } from '../services/prismic';
-import { format } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
+import { formatDate } from './../utils/date';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
-import { useState } from 'react';
 
 interface Post {
   uid?: string;
@@ -28,11 +29,13 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps) {
-  const [nextPage, setNextPage] = useState(postsPagination.next_page);
-  const [posts, setPosts] = useState(postsPagination.results);
+  const [nextPage, setNextPage] = useState<string | null>(
+    postsPagination.next_page
+  );
+  const [posts, setPosts] = useState<Post[]>(postsPagination.results);
 
   const handleLoadMorePosts = async () => {
-    const data = await fetch(postsPagination.next_page).then(res => res.json());
+    const data = await fetch(nextPage).then(res => res.json());
 
     if (data.next_page) {
       setNextPage(data.next_page);
@@ -43,13 +46,7 @@ export default function Home({ postsPagination }: HomeProps) {
     const newPosts = data.results.map(post => {
       return {
         uid: post.uid,
-        first_publication_date: format(
-          new Date(post.first_publication_date),
-          'dd MMM yyyy',
-          {
-            locale: ptBR,
-          }
-        ),
+        first_publication_date: post.first_publication_date,
         data: {
           title: post.data.title,
           subtitle: post.data.subtitle,
@@ -59,27 +56,35 @@ export default function Home({ postsPagination }: HomeProps) {
     });
 
     setPosts([...posts, ...newPosts]);
-    console.log(posts);
   };
 
   return (
-    <div>
-      <img src="/images/Logo.svg" alt="Logo" />
+    <div className={`${commonStyles.container} ${styles.container}`}>
+      <img className={styles.logo} src="/images/Logo.svg" alt="Logo" />
       {posts.map((post, key) => {
         return (
-          <div key={key}>
-            <h1>{post.data.title}</h1>
-            <p>{post.data.subtitle}</p>
-            <div>
-              <time>{post.first_publication_date}</time>
-              <span>{post.data.author}</span>
-              <span>{postsPagination.next_page}</span>
-            </div>
-          </div>
+          <Link key={key} href={`/post/${post.uid}`}>
+            <a className={styles.content}>
+              <h1>{post.data.title}</h1>
+              <p>{post.data.subtitle}</p>
+              <div className={styles.details}>
+                <time>
+                  <FiCalendar size={20} strokeWidth={2.4} />
+                  {formatDate(post.first_publication_date)}
+                </time>
+                <span>
+                  <FiUser size={20} strokeWidth={2.4} />
+                  {post.data.author}
+                </span>
+              </div>
+            </a>
+          </Link>
         );
       })}
       {nextPage && (
-        <span onClick={handleLoadMorePosts}>Carregar mais posts</span>
+        <span className={styles.loadButton} onClick={handleLoadMorePosts}>
+          Carregar mais posts
+        </span>
       )}
     </div>
   );
@@ -88,18 +93,12 @@ export default function Home({ postsPagination }: HomeProps) {
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient({});
   const postsResponse = await prismic.getByType('posts', {
-    pageSize: 1,
+    pageSize: 5,
   });
   const posts = postsResponse.results.map(post => {
     return {
       uid: post.uid,
-      first_publication_date: format(
-        new Date(post.first_publication_date),
-        'dd MMM yyyy',
-        {
-          locale: ptBR,
-        }
-      ),
+      first_publication_date: post.first_publication_date,
       data: {
         title: post.data.title,
         subtitle: post.data.subtitle,
@@ -108,7 +107,6 @@ export const getStaticProps: GetStaticProps = async () => {
     };
   });
 
-  console.log(posts);
   return {
     props: {
       postsPagination: {
@@ -116,5 +114,6 @@ export const getStaticProps: GetStaticProps = async () => {
         results: posts,
       },
     },
+    revalidate: 60 * 60 * 24, // 24 horas
   };
 };
