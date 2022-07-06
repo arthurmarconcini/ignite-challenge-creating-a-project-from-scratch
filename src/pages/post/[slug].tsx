@@ -43,7 +43,7 @@ export default function Post({ post }: PostProps) {
       return acc + text.split(' ').length + content.heading.split(' ').length;
     }, 0);
 
-    return Math.round(minutesToRead / 200) + 1;
+    return Math.ceil(minutesToRead / 200);
   });
 
   if (router.isFallback) {
